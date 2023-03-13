@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { Svg, Line } from "react-native-svg";
 import { TouchableWithoutFeedback } from "react-native";
 import { useSnapshot } from "valtio";
+import { matchingVowel, matchingConsonant } from "./phonemes";
 
 function LineBetween(point1, point2, model, modelSnap, name) {
   const enabled = modelSnap[name];
@@ -20,7 +21,11 @@ function LineBetween(point1, point2, model, modelSnap, name) {
     />,
     <Line
       key="pressable"
-      onPress={() => (model[name] = !enabled)}
+      onPress={() => {
+        model[name] = !enabled;
+        console.log(model.vowel);
+        console.log(model.consonant);
+      }}
       x1={point1.x}
       y1={point1.y}
       x2={point2.x}
@@ -68,47 +73,56 @@ export default function FoxishCharacterEditor(props) {
   };
   const bottomSide = { x: margin, y: margin + 2 * diamondHeight };
 
+  const vowel = matchingVowel(modelSnap.vowel);
+  const consonant = matchingConsonant(modelSnap.consonant);
+
   return (
-    <Svg style={styles.svg} height="400" width="220">
-      {LineBetween(topTop, topLeft, model, modelSnap, "topNW")}
-      {LineBetween(topTop, topRight, model, modelSnap, "topNE")}
-      {LineBetween(topLeft, topBottom, model, modelSnap, "topSW")}
-      {LineBetween(topRight, topBottom, model, modelSnap, "topSE")}
-      {LineBetween(topTop, topBottom, model, modelSnap, "topCenter")}
+    <View style={styles.container}>
+      <Svg style={styles.svg} height="400" width="220">
+        {LineBetween(topTop, topLeft, model, modelSnap, "topNW")}
+        {LineBetween(topTop, topRight, model, modelSnap, "topNE")}
+        {LineBetween(topLeft, topBottom, model, modelSnap, "topSW")}
+        {LineBetween(topRight, topBottom, model, modelSnap, "topSE")}
+        {LineBetween(topTop, topBottom, model, modelSnap, "topCenter")}
 
-      {LineBetween(topSide, topLeft, model, modelSnap, "side")}
+        {LineBetween(topSide, topLeft, model, modelSnap, "side")}
 
-      {LineBetween(bottomTop, bottomLeft, model, modelSnap, "botNW")}
-      {LineBetween(bottomTop, bottomRight, model, modelSnap, "botNE")}
-      {LineBetween(bottomLeft, bottomBottom, model, modelSnap, "botSW")}
-      {LineBetween(bottomRight, bottomBottom, model, modelSnap, "botSE")}
-      {LineBetween(bottomTop, bottomBottom, model, modelSnap, "botCenter")}
+        {LineBetween(bottomTop, bottomLeft, model, modelSnap, "botNW")}
+        {LineBetween(bottomTop, bottomRight, model, modelSnap, "botNE")}
+        {LineBetween(bottomLeft, bottomBottom, model, modelSnap, "botSW")}
+        {LineBetween(bottomRight, bottomBottom, model, modelSnap, "botSE")}
+        {LineBetween(bottomTop, bottomBottom, model, modelSnap, "botCenter")}
 
-      {LineBetween(bottomSide, bottomLeft, model, modelSnap, "side")}
+        {LineBetween(bottomSide, bottomLeft, model, modelSnap, "side")}
 
-      {modelSnap.botCenter || modelSnap.topCenter ? (
+        {modelSnap.botCenter || modelSnap.topCenter ? (
+          <Line
+            x1={topBottom.x}
+            y1={topBottom.y}
+            x2={wordCenter.x}
+            y2={wordCenter.y}
+            stroke="black"
+            strokeWidth="5"
+          />
+        ) : (
+          ""
+        )}
+
         <Line
-          x1={topBottom.x}
-          y1={topBottom.y}
-          x2={wordCenter.x}
-          y2={wordCenter.y}
+          x1={wordLeft.x}
+          y1={wordLeft.y}
+          x2={wordRight.x}
+          y2={wordRight.y}
           stroke="black"
           strokeWidth="5"
+          strokeLinecap="round"
         />
-      ) : (
-        ""
-      )}
-
-      <Line
-        x1={wordLeft.x}
-        y1={wordLeft.y}
-        x2={wordRight.x}
-        y2={wordRight.y}
-        stroke="black"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-    </Svg>
+      </Svg>
+      <Text style={styles.text}>
+        {vowel ? vowel.sound : ""}
+        {consonant ? consonant.sound : ""}
+      </Text>
+    </View>
   );
 }
 
@@ -118,4 +132,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   svg: {},
+  text: {},
 });

@@ -6,8 +6,6 @@ export default function FoxishEditor(props) {
   const model = props.model;
   const modelSnap = useSnapshot(model);
 
-  console.log(modelSnap.characters.length);
-
   const characters = modelSnap.characters.map((snap, index) => {
     return (
       <FoxishCharacterEditor
