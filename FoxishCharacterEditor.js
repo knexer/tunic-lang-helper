@@ -23,8 +23,6 @@ function LineBetween(point1, point2, model, modelSnap, name) {
       key="pressable"
       onPress={() => {
         model[name] = !enabled;
-        console.log(model.vowel);
-        console.log(model.consonant);
       }}
       x1={point1.x}
       y1={point1.y}
@@ -119,8 +117,14 @@ export default function FoxishCharacterEditor(props) {
         />
       </Svg>
       <Text style={styles.text}>
-        {vowel ? vowel.sound : ""}
         {consonant ? consonant.sound : ""}
+        {vowel ? vowel.sound : ""}
+      </Text>
+      <Text style={styles.examples}>
+        {consonant ? consonant.sound + " as in " + consonant.example : ""}
+      </Text>
+      <Text style={styles.examples}>
+        {vowel ? vowel.sound + " as in " + vowel.example : ""}
       </Text>
     </View>
   );
@@ -130,7 +134,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
   },
   svg: {},
-  text: {},
+  text: { fontSize: 60 },
+  examples: { fontSize: 18 },
 });

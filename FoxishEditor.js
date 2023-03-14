@@ -1,22 +1,35 @@
-import { ScrollView, Text, StyleSheet } from "react-native";
+import { FlatList, ScrollView, StyleSheet } from "react-native";
 import FoxishCharacterEditor from "./FoxishCharacterEditor";
 import { useSnapshot } from "valtio";
+import FoxishCharacterModel from "./FoxishCharactorModel";
 
 export default function FoxishEditor(props) {
   const model = props.model;
   const modelSnap = useSnapshot(model);
 
-  const characters = modelSnap.characters.map((snap, index) => {
+  const renderItem = (params) => {
     return (
       <FoxishCharacterEditor
         style={styles.character}
-        key={index}
-        model={props.model.characters[index]}
+        key={params.index}
+        model={model.characters[params.index]}
       />
     );
-  });
+  };
+  //const characters = modelSnap.characters.map(renderItem)
 
-  return <ScrollView horizontal={true}>{characters}</ScrollView>;
+  return (
+    <FlatList
+      horizontal={true}
+      onEndReached={() => {
+        model.characters.push(new FoxishCharacterModel());
+      }}
+      onRefresh={() => model.reset()}
+      refreshing={false}
+      data={modelSnap.characters}
+      renderItem={renderItem}
+    ></FlatList>
+  );
 }
 
 const styles = StyleSheet.create({
