@@ -3,7 +3,7 @@ function phoneme(lines, sound, example) {
 }
 
 const vowels = [
-  phoneme([false, false, false, false, true], "ei", "pie"),
+  phoneme([false, false, false, false, true], "ie", "pie"),
   phoneme([false, false, false, true, true], "uh", "bruh"),
   phoneme([true, true, false, false, false], "ih", "tin"),
   phoneme([true, true, true, true, false], "ee", "tea"),
@@ -48,7 +48,7 @@ const consonants = [
   phoneme([true, false, true, true, true, true], "jjh", "usual"),
 ];
 
-function matchingVowel(lines) {
+function getMatchingVowel(lines) {
   const key = JSON.stringify(lines);
   for (const vowel of vowels) {
     if (JSON.stringify(vowel.lines) === key) {
@@ -57,7 +57,7 @@ function matchingVowel(lines) {
   }
 }
 
-function matchingConsonant(lines) {
+function getMatchingConsonant(lines) {
   const key = JSON.stringify(lines);
   for (const consonant of consonants) {
     if (JSON.stringify(consonant.lines) === key) {
@@ -66,4 +66,4 @@ function matchingConsonant(lines) {
   }
 }
 
-export { matchingVowel, matchingConsonant };
+export { getMatchingVowel, getMatchingConsonant };

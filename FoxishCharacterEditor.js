@@ -1,41 +1,43 @@
-import { useState, useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { Svg, Line } from "react-native-svg";
-import { TouchableWithoutFeedback } from "react-native";
 import { useSnapshot } from "valtio";
-import { matchingVowel, matchingConsonant } from "./phonemes";
 
-function LineBetween(point1, point2, model, modelSnap, name) {
+import { getMatchingVowel, getMatchingConsonant } from "./phonemes.js";
+
+function TouchableLineBetween(point1, point2, model, modelSnap, name) {
   const enabled = modelSnap[name];
-  return [
-    <Line
-      key="visible"
-      x1={point1.x}
-      y1={point1.y}
-      x2={point2.x}
-      y2={point2.y}
-      stroke={enabled ? "black" : "gray"}
-      strokeWidth={enabled ? 5 : 3}
-      strokeLinecap="round"
-      strokeDasharray={enabled ? "" : "0, 10"}
-    />,
-    <Line
-      key="pressable"
-      onPress={() => {
-        model[name] = !enabled;
-      }}
-      x1={point1.x}
-      y1={point1.y}
-      x2={point2.x}
-      y2={point2.y}
-      stroke="transparent"
-      strokeWidth="60"
-    />,
-  ];
+  return (
+    <>
+      <Line
+        key="visible"
+        x1={point1.x}
+        y1={point1.y}
+        x2={point2.x}
+        y2={point2.y}
+        stroke={enabled ? "black" : "gray"}
+        strokeWidth={enabled ? 5 : 3}
+        strokeLinecap="round"
+        strokeDasharray={enabled ? "" : "0, 10"}
+      />
+      ,
+      <Line
+        key="pressable"
+        onPress={() => {
+          model[name] = !enabled;
+        }}
+        x1={point1.x}
+        y1={point1.y}
+        x2={point2.x}
+        y2={point2.y}
+        stroke="transparent"
+        strokeWidth="60"
+      />
+      ,
+    </>
+  );
 }
 
-export default function FoxishCharacterEditor(props) {
-  const model = props.model;
+export default function FoxishCharacterEditor({ model }) {
   const modelSnap = useSnapshot(model);
 
   // Measured distances:
@@ -71,40 +73,63 @@ export default function FoxishCharacterEditor(props) {
   };
   const bottomSide = { x: margin, y: margin + 2 * diamondHeight };
 
-  const vowel = matchingVowel(modelSnap.vowel);
-  const consonant = matchingConsonant(modelSnap.consonant);
+  const vowel = getMatchingVowel(modelSnap.vowel);
+  const consonant = getMatchingConsonant(modelSnap.consonant);
 
   return (
     <View style={styles.container}>
-      <Svg style={styles.svg} height="400" width="220">
-        {LineBetween(topTop, topLeft, model, modelSnap, "topNW")}
-        {LineBetween(topTop, topRight, model, modelSnap, "topNE")}
-        {LineBetween(topLeft, topBottom, model, modelSnap, "topSW")}
-        {LineBetween(topRight, topBottom, model, modelSnap, "topSE")}
-        {LineBetween(topTop, topBottom, model, modelSnap, "topCenter")}
+      <Svg style={styles.svg}>
+        {TouchableLineBetween(topTop, topLeft, model, modelSnap, "topNW")}
+        {TouchableLineBetween(topTop, topRight, model, modelSnap, "topNE")}
+        {TouchableLineBetween(topLeft, topBottom, model, modelSnap, "topSW")}
+        {TouchableLineBetween(topRight, topBottom, model, modelSnap, "topSE")}
+        {TouchableLineBetween(topTop, topBottom, model, modelSnap, "topCenter")}
 
-        {LineBetween(topSide, topLeft, model, modelSnap, "side")}
+        {TouchableLineBetween(topSide, topLeft, model, modelSnap, "side")}
 
-        {LineBetween(bottomTop, bottomLeft, model, modelSnap, "botNW")}
-        {LineBetween(bottomTop, bottomRight, model, modelSnap, "botNE")}
-        {LineBetween(bottomLeft, bottomBottom, model, modelSnap, "botSW")}
-        {LineBetween(bottomRight, bottomBottom, model, modelSnap, "botSE")}
-        {LineBetween(bottomTop, bottomBottom, model, modelSnap, "botCenter")}
-
-        {LineBetween(bottomSide, bottomLeft, model, modelSnap, "side")}
-
-        {modelSnap.botCenter || modelSnap.topCenter ? (
-          <Line
-            x1={topBottom.x}
-            y1={topBottom.y}
-            x2={wordCenter.x}
-            y2={wordCenter.y}
-            stroke="black"
-            strokeWidth="5"
-          />
-        ) : (
-          ""
+        {TouchableLineBetween(bottomTop, bottomLeft, model, modelSnap, "botNW")}
+        {TouchableLineBetween(
+          bottomTop,
+          bottomRight,
+          model,
+          modelSnap,
+          "botNE"
         )}
+        {TouchableLineBetween(
+          bottomLeft,
+          bottomBottom,
+          model,
+          modelSnap,
+          "botSW"
+        )}
+        {TouchableLineBetween(
+          bottomRight,
+          bottomBottom,
+          model,
+          modelSnap,
+          "botSE"
+        )}
+        {TouchableLineBetween(
+          bottomTop,
+          bottomBottom,
+          model,
+          modelSnap,
+          "botCenter"
+        )}
+
+        {TouchableLineBetween(bottomSide, bottomLeft, model, modelSnap, "side")}
+
+        {modelSnap.botCenter ||
+          (modelSnap.topCenter && (
+            <Line
+              x1={topBottom.x}
+              y1={topBottom.y}
+              x2={wordCenter.x}
+              y2={wordCenter.y}
+              stroke="black"
+              strokeWidth="5"
+            />
+          ))}
 
         <Line
           x1={wordLeft.x}
@@ -137,7 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     marginHorizontal: 0,
   },
-  svg: {},
+  svg: { height: 400, width: 220 },
   text: { fontSize: 60 },
   examples: { fontSize: 18 },
 });
